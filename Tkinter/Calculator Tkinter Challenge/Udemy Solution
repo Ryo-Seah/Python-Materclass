@@ -27,7 +27,9 @@ for row in keys:
         
 mainwindow.update()
 mainwindow.minsize(keypad.winfo_width() +mainwindowpadding, Outputbar.winfo_height()+keypad.winfo_height())
+mainwindow.maxsize(keypad.winfo_width() + 70 + mainwindowpadding, Outputbar.winfo_height()+70 + keypad.winfo_height())
 mainwindow.mainloop()
 # minsize restricts the minimum minimization of window. # Here, .winfo_width and .winfo_height gives us length and breadth of wdigets with addition of other factors like padx
 # .update forces window the draw the widgets first so the line of code after will run.
 #rmb that only after passing .mainloop at lastline is everything generated. Before that, by chronology, none of widgets exist.
+# Maxsize similar to min but used less often. gave a leeway of 70 pix
