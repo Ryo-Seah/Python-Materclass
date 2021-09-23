@@ -1,0 +1,36 @@
+import tkinter as tk
+import math
+
+mainwindow = tk.Tk()
+mainwindow.title('Calculator App')
+mainwindow.geometry('480x360-8-200')
+mainwindowpadding=8  
+mainwindow.config(padx=mainwindowpadding)
+
+Outputbar = tk.Entry(mainwindow, text='HELLO')
+Outputbar.grid(row=0, column=0, columnspan=4, sticky='nsew')
+keypad = tk.Frame(mainwindow)
+keypad.grid(row=1, column = 0, sticky= 'nsew')
+
+keypad.columnconfigure(0, weight=1)
+keypad.columnconfigure(1, weight=1)
+keypad.columnconfigure(2, weight=1)
+keypad.columnconfigure(3, weight=1)
+keypad.columnconfigure(4, weight=1)
+keypad.columnconfigure(5, weight=1)
+keypad.rowconfigure(0, weight=1)
+keypad.rowconfigure(1, weight=1)
+keypad.rowconfigure(2, weight=1)
+keypad.rowconfigure(3, weight=1)
+keypad.rowconfigure(4, weight=1)
+keypad.rowconfigure(5, weight=1)
+
+
+keys=[ '0','=',None, '/', '1','2','3','*','4','5','6','-' ,'7','8','9','+','C','CE']
+for _ in keys:
+        if _ == '=':
+                tk.Button(keypad,text=_, width=3).grid(row=(6-(math.floor(1+(keys.index(_))/4))), column=keys.index(_)%4, columnspan=2, sticky='wens')
+        elif _ != None:
+                tk.Button(keypad,text=_, width=3).grid(row=(6-(math.floor(1+(keys.index(_))/4))), column=keys.index(_)%4, sticky='wens')
+
+mainwindow.mainloop()
