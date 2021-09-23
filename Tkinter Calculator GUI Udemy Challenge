@@ -11,19 +11,6 @@ Outputbar.grid(row=0, column=0, columnspan=4, sticky='nsew')
 keypad = tk.Frame(mainwindow)
 keypad.grid(row=1, column = 0, sticky= 'nsew')
 
-keypad.columnconfigure(0, weight=1)
-keypad.columnconfigure(1, weight=1)
-keypad.columnconfigure(2, weight=1)
-keypad.columnconfigure(3, weight=1)
-keypad.columnconfigure(4, weight=1)
-keypad.columnconfigure(5, weight=1)
-keypad.rowconfigure(0, weight=1)
-keypad.rowconfigure(1, weight=1)
-keypad.rowconfigure(2, weight=1)
-keypad.rowconfigure(3, weight=1)
-keypad.rowconfigure(4, weight=1)
-keypad.rowconfigure(5, weight=1)
-mainwindowpadding=8
 
 keys = [[('C', 1), ('CE', 1)],
         [('7', 1), ('8', 1), ('9', 1), ('+', 1)],
