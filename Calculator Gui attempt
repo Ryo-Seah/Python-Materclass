@@ -7,7 +7,7 @@ mainwindow.geometry('480x360-8-200')
 mainwindowpadding=8  
 mainwindow.config(padx=mainwindowpadding)
 
-Outputbar = tk.Entry(mainwindow, text='HELLO')
+Outputbar = tk.Entry(mainwindow)
 Outputbar.grid(row=0, column=0, columnspan=4, sticky='nsew')
 keypad = tk.Frame(mainwindow)
 keypad.grid(row=1, column = 0, sticky= 'nsew')
