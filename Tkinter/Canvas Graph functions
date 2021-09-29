@@ -1,0 +1,43 @@
+from tkinter import *
+
+
+def parabola (x):
+    y= x * x / 100
+    return y
+
+
+def plot(canvas,x,y):
+    canvas.create_line(x,y,x+2,y+2, fill='black')
+
+
+def draw_axes(canvas):
+    canvas.update()
+    x_origin = canvas.winfo_width() / 2
+    y_origin = canvas.winfo_height() / 2
+    canvas.config(scrollregion=(-x_origin, - y_origin, x_origin, y_origin))
+    # these are not actually origins but left and right limit coordinates.
+    # Also to note that y axis is negative at the top and increases as it goes down- need to flip
+    canvas.create_line(-x_origin, 0, x_origin, 0, fill='black' )
+    canvas.create_line(0, -y_origin, 0, y_origin, fill='brown')
+    canvas.create_line(-x_origin, - y_origin, x_origin*10, y_origin*10, fill='red')
+    # canvas.create_rectangle(161,121,-161,-121)
+    # print(x_origin)
+    # print(y_origin)
+
+mainwindow = Tk()
+mainwindow.title('Parabola')
+mainwindow.geometry('640x480')
+canvas= Canvas(mainwindow, width=640, height=480)
+canvas.grid(row=0, column=0)
+draw_axes(canvas)
+plot(canvas,150, 120)
+
+for x in range(-100, 100):
+    y= -parabola()
+    plot(canvas,x,y)
+
+for x in range(-300,300):
+    y= - x*x*x /10000 +50
+    plot(canvas, x, y)
+
+mainwindow.mainloop()
