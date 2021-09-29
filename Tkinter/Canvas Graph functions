@@ -2,14 +2,38 @@ from tkinter import *
 
 
 def parabola (x):
-    y= x * x / 100
-    return y
+    for x in range(size):
+        y= x * x / size
+        plot(page, x, y)
+        plot(page, -x, y)
+        # this helps lets us input size to fill screen. Directly Plots also.
 
 
 def plot(canvas,x,y):
-    canvas.create_line(x,y,x+2,y+2, fill='black')
+    canvas.create_line(x,-y,x+2,-y+2, fill='black')
+#adding negative y so it flips
 
+def circle(page,radius,h,k):
+    for x in range(h,h+radius):
+        y= k + math.sqrt(radius**2-(x-h)**2)
+        plot(page,x,y)
+        plot(page,x,2*k-y)
+        plot(page,2*h-x, y)
+        plot(page,2*h-x, 2*k-y)
+#for (y-k)>0, y=k + math.sqrt(radius**2-(x-h)**2)
+#for (y-k)<0, y=k - math.sqrt(radius**2-(x-h)**2)
+#for (x-h)>0, x=h + math.sqrt(radius**2-(y-k)**2)
+#for (x-h)<0, x=h - math.sqrt(radius**2-(y-k)**2)
+#so need to add back the 2h and 2k when we swap signs for x or y respectively.
+#the quadrants r reflection, theres 2 sets of y or each value of x &vice versa
+# because we only use integers, lack of points at ends.
 
+def cubic_equation(page, size):
+    for x in range(-size,size):
+        y = x*x*x / size
+        plot(page, x, y)
+        
+        
 def draw_axes(canvas):
     canvas.update()
     x_origin = canvas.winfo_width() / 2
@@ -20,6 +44,7 @@ def draw_axes(canvas):
     canvas.create_line(-x_origin, 0, x_origin, 0, fill='black' )
     canvas.create_line(0, -y_origin, 0, y_origin, fill='brown')
     canvas.create_line(-x_origin, - y_origin, x_origin*10, y_origin*10, fill='red')
+    print(locals()) #print all variables
     # canvas.create_rectangle(161,121,-161,-121)
     # print(x_origin)
     # print(y_origin)
@@ -29,15 +54,14 @@ mainwindow.title('Parabola')
 mainwindow.geometry('640x480')
 canvas= Canvas(mainwindow, width=640, height=480)
 canvas.grid(row=0, column=0)
+
 draw_axes(canvas)
-plot(canvas,150, 120)
+parabola(canvas,320)
+cubic_equation(canvas,10000)
+cubic_equation(canvas,320)
+circle(canvas,30,20,20)
 
-for x in range(-100, 100):
-    y= -parabola()
-    plot(canvas,x,y)
 
-for x in range(-300,300):
-    y= - x*x*x /10000 +50
-    plot(canvas, x, y)
+
 
 mainwindow.mainloop()
