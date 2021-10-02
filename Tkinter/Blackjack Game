@@ -1,10 +1,5 @@
 import random
 import tkinter
-mainwindow = tkinter.Tk()
-
-mainwindow.title('Black Jack')
-mainwindow.geometry('640x480')
-
 
 def load_card(card_images):
     suits = ['diamond', 'club', 'heart', 'spade']
@@ -27,13 +22,14 @@ def load_card(card_images):
             card_images.append((10, image))
 
 
-def shuffle(deck):
+def shuffle():
     random.shuffle(deck)
 
 
 def deal_cards(frame) :
     # pop the next card off the top of the deck
     next_card = deck.pop(0)
+    deck.append(next_card)  #return to bottom of deck
     # if no more cards there will be an error, and if no specific index will take from bottom of deck
     # add the image to a Label and display the label
     tkinter.Label(frame, image=next_card[1], relief='raised').pack(side='left')
@@ -50,8 +46,10 @@ def score_hand(hand):
         if card_value == 1 and player_ace_count == 0:
             card_value = 11
             ace_count += 1
-        if score > 21 and player_ace_count > 0:
+        score += card_value
+        if score > 21 and player_ace_count == 0:
             score -= 10
+            ace_count += 1
         score += card_value
     return score
 
@@ -63,36 +61,69 @@ def score_hand(hand):
 
 def draw_card_dealer():
     dealers_score = score_hand(dealer_hand)
-    while 0 < dealers_score < 17:
+    player_score = score_hand(player_hand)
+    while 0 < dealers_score < 17 and dealers_score < player_score:
         dealer_hand.append(deal_cards(dealers_frame))
         dealers_score = score_hand(dealer_hand)
         dealer_score_label.set(dealers_score)
-    player_score = score_hand(player_hand)
     if player_score > 21:
         result_text.set('Dealer wins!')
+    elif len(player_hand) == 5 and player_score < 22:
+        result_text.set('Player 5X baby!')
     elif dealers_score >21 or dealers_score < player_score:
         result_text.set('Player Wins!')
     elif dealers_score > player_score :
         result_text.set('Dealer wins!')
+    elif len(dealer_hand) > 5 and dealers_score < 22:
+        result_text.set('Dealer 5X baby!')
     else:
-        result_text.set('Draw!')player_hand.append(deal_cards(player_frame)) # i get what it returns but function still runs
-    # if no more cards there will be an error, and if no specific index will take
-    # from bottom of deck
-    player_score = score_hand(player_hand)
-    player_score_label.set(player_score)
-    if player_score > 21:
-        result_text.set('Dealer wins!')
-
+        result_text.set('Draw!')
+        
+        
 def draw_card_player():
-    player_hand.append(deal_cards(player_frame)) # i get what it returns but function still runs
+player_score = score_hand(player_hand)
+    if player_score < 22:
+        player_hand.append(deal_cards(player_frame)) # i get what it returns but function still runs
     # if no more cards there will be an error, and if no specific index will take
     # from bottom of deck
-    player_score = score_hand(player_hand)
-    player_score_label.set(player_score)
-    if player_score > 21:
-        result_text.set('Dealer wins!')
+        player_score = score_hand(player_hand)
+        player_score_label.set(player_score)
+        if player_score > 21:
+            result_text.set('Dealer wins!')
+
+def restart():
+    global dealers_frame
+    global player_frame
+    global player_hand  # why can i use this variable even tho its undefined.
+    # But i must define deck or i cant use
+    global dealer_hand
+    global deck
+    # why do i need to destroy? if it runs fine. RAM?
+    # dealers_frame.destroy
+    # player_frame.destroy
+    dealers_frame = tkinter.Frame(game_board_frame, background='green')
+    dealers_frame.grid(row=0, column=1, columnspan=6, rowspan=2, sticky='ew')
+    player_frame = tkinter.Frame(game_board_frame, background='green')
+    player_frame.grid(row=2, column=1, columnspan=6, rowspan=2, sticky='ew')
+
+    result_text.set('')
+    player_hand = []
+    dealer_hand = []
+    # deck = list(card)
+    # shuffle(deck)
+    # can use .clear method but it wont create new empty list
+    draw_card_player()
+    dealer_hand.append(deal_cards(dealers_frame))
+    dealer_score_label.set(score_hand(dealer_hand))
+    draw_card_player()
+    shuffle()
 
 
+mainwindow = tkinter.Tk()
+
+mainwindow.title('Black Jack')
+mainwindow.geometry('640x480')
+    
 result_text=tkinter.StringVar()
 results_label = tkinter.Label(mainwindow, textvariable=result_text)
 results_label.grid(row=0, column=0, columnspan=6)
@@ -117,16 +148,21 @@ dealer_button = tkinter.Button(button_frame, text='Dealer', command=draw_card_de
 dealer_button.grid(row=0, column=0, sticky='sw')
 player_button = tkinter.Button(button_frame, text='Player', command=draw_card_player)
 player_button.grid(row=0, column=1, sticky='se')
-
+new_game_button = tkinter.Button(button_frame, text='New Game', command=restart)
+new_game_button.grid(row=0, column=2, sticky='se')
+shuffle_button = tkinter.Button(button_frame, text='Shuffle', command=shuffle)
+shuffle_button.grid(row=0, column=3, sticky='se')
+# shuffle and restart button
 card = []
 load_card(card)
-deck = list(card)
-shuffle(deck)
+deck = list(card) + list(card) # double deck
+shuffle()
 
-player_hand = []
-dealer_hand = []
-draw_card_player()
-dealer_hand.append(deal_cards(dealer_frame))
-draw_card_player()
+# draw_card_player()
+# dealer_hand.append(deal_cards(dealers_frame))
+# dealer_score_label.set(score_hand(dealer_hand))
+# draw_card_player(
+# ^removal of duplicate code, its shifted to the restart function
 
+restart()
 mainwindow.mainloop()
