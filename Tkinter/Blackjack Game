@@ -1,0 +1,81 @@
+import random
+import tkinter
+mainwindow = tkinter.Tk()
+
+mainwindow.title('Black Jack')
+mainwindow.geometry('640x480')
+
+
+def load_card(card_images):
+    suits = ['diamond', 'club', 'heart', 'spade']
+    numbers = list(range(1,11))
+    face_cards=['jack','queen','king']
+    if tkinter.TkVersion >=8.6:
+        extension='png'
+    else:
+        extension='ppm'
+    for suit in suits:
+        for number in numbers:
+            filename = 'cards/{}_{}.{}'.format(number,suit,extension)
+            image = tkinter.PhotoImage(file=filename)
+            card_images.append((number,image))
+    for face_card in face_cards:
+        for suit in suits:
+            filename = 'cards/{}_{}.{}'.format(face_card, suit, extension)
+            image = tkinter.PhotoImage(file=filename)
+            # double brackets because i append a tuple
+            card_images.append((10, image))
+
+
+def shuffle(deck):
+    random.shuffle(deck)
+
+
+card = []
+load_card(card)
+deck = list(card)
+shuffle(deck)
+
+# create one function for dealer and player because of assignment of command= on button
+# if i assign command =deal_card(frame), it will assign the return value to button
+# if i assign command = deal_card i cannot input the frame parameter.
+# this is not practical if there is a ton of buttons like calculator
+def draw_card_dealer():
+    next_card = deck.pop()
+    tkinter.Label(dealers_frame, image=next_card[1], relief='raised').pack(side='left')
+    return next_card
+
+
+def draw_card_player():
+    next_card = deck.pop()
+    tkinter.Label(player_frame, image=next_card[1], relief='raised').pack(side='left')
+    return next_card[0]
+
+
+result_text=tkinter.StringVar()
+results_label = tkinter.Label(mainwindow, textvariable=result_text)
+results_label.grid(row=0, column=0, columnspan=6)
+
+game_board_frame = tkinter.Frame(mainwindow, relief='sunken', background='green')
+game_board_frame.grid(row=1, column=0, columnspan=6, rowspan=2, sticky='ew')
+
+dealers_frame = tkinter.Frame(game_board_frame, background='green')
+dealers_frame.grid(row=0, column=1, columnspan=6,rowspan=2, sticky='ew')
+player_frame = tkinter.Frame(game_board_frame, background='green')
+player_frame.grid(row=2, column=1, columnspan=6,rowspan=2, sticky='ew')
+dealer_score_label = tkinter.IntVar()
+tkinter.Label(game_board_frame,background='green', text='Dealer').grid(row=0,column=0)
+tkinter.Label(game_board_frame,background='green', textvariable=dealer_score_label).grid(row=1,column=0)
+player_score_label = tkinter.IntVar()
+tkinter.Label(game_board_frame,background='green', text='Player').grid(row=2,column=0)
+tkinter.Label(game_board_frame,background='green', textvariable=player_score_label).grid(row=3,column=0)
+
+
+button_frame = tkinter.Frame(mainwindow)
+button_frame.grid(row=3, column=0, columnspan=3)
+dealer_button = tkinter.Button(button_frame, text='Dealer', command=draw_card_dealer)
+dealer_button.grid(row=0, column=0, sticky='sw')
+player_button = tkinter.Button(button_frame, text='Player', command=draw_card_player)
+player_button.grid(row=0, column=1, sticky='se')
+
+mainwindow.mainloop()
