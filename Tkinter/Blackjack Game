@@ -31,25 +31,66 @@ def shuffle(deck):
     random.shuffle(deck)
 
 
-card = []
-load_card(card)
-deck = list(card)
-shuffle(deck)
+def deal_cards(frame) :
+    # pop the next card off the top of the deck
+    next_card = deck.pop(0)
+    # if no more cards there will be an error, and if no specific index will take from bottom of deck
+    # add the image to a Label and display the label
+    tkinter.Label(frame, image=next_card[1], relief='raised').pack(side='left')
+    # now return the card's face value
+    return next_card
+    
+
+def score_hand(hand):
+    ace_count = 0
+    score = 0
+    # calculate score of cards in hand
+    for next_card in hand:
+        card_value = next_card[0]
+        if card_value == 1 and player_ace_count == 0:
+            card_value = 11
+            ace_count += 1
+        if score > 21 and player_ace_count > 0:
+            score -= 10
+        score += card_value
+    return score
+
 
 # create one function for dealer and player because of assignment of command= on button
 # if i assign command =deal_card(frame), it will assign the return value to button
 # if i assign command = deal_card i cannot input the frame parameter.
 # this is not practical if there is a ton of buttons like calculator
-def draw_card_dealer():
-    next_card = deck.pop()
-    tkinter.Label(dealers_frame, image=next_card[1], relief='raised').pack(side='left')
-    return next_card
 
+def draw_card_dealer():
+    dealers_score = score_hand(dealer_hand)
+    while 0 < dealers_score < 17:
+        dealer_hand.append(deal_cards(dealers_frame))
+        dealers_score = score_hand(dealer_hand)
+        dealer_score_label.set(dealers_score)
+    player_score = score_hand(player_hand)
+    if player_score > 21:
+        result_text.set('Dealer wins!')
+    elif dealers_score >21 or dealers_score < player_score:
+        result_text.set('Player Wins!')
+    elif dealers_score > player_score :
+        result_text.set('Dealer wins!')
+    else:
+        result_text.set('Draw!')player_hand.append(deal_cards(player_frame)) # i get what it returns but function still runs
+    # if no more cards there will be an error, and if no specific index will take
+    # from bottom of deck
+    player_score = score_hand(player_hand)
+    player_score_label.set(player_score)
+    if player_score > 21:
+        result_text.set('Dealer wins!')
 
 def draw_card_player():
-    next_card = deck.pop()
-    tkinter.Label(player_frame, image=next_card[1], relief='raised').pack(side='left')
-    return next_card[0]
+    player_hand.append(deal_cards(player_frame)) # i get what it returns but function still runs
+    # if no more cards there will be an error, and if no specific index will take
+    # from bottom of deck
+    player_score = score_hand(player_hand)
+    player_score_label.set(player_score)
+    if player_score > 21:
+        result_text.set('Dealer wins!')
 
 
 result_text=tkinter.StringVar()
@@ -70,12 +111,22 @@ player_score_label = tkinter.IntVar()
 tkinter.Label(game_board_frame,background='green', text='Player').grid(row=2,column=0)
 tkinter.Label(game_board_frame,background='green', textvariable=player_score_label).grid(row=3,column=0)
 
-
 button_frame = tkinter.Frame(mainwindow)
 button_frame.grid(row=3, column=0, columnspan=3)
 dealer_button = tkinter.Button(button_frame, text='Dealer', command=draw_card_dealer)
 dealer_button.grid(row=0, column=0, sticky='sw')
 player_button = tkinter.Button(button_frame, text='Player', command=draw_card_player)
 player_button.grid(row=0, column=1, sticky='se')
+
+card = []
+load_card(card)
+deck = list(card)
+shuffle(deck)
+
+player_hand = []
+dealer_hand = []
+draw_card_player()
+dealer_hand.append(deal_cards(dealer_frame))
+draw_card_player()
 
 mainwindow.mainloop()
