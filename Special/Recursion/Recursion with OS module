@@ -1,0 +1,51 @@
+import os
+# method 1
+
+
+listing = os.walk('.')
+for dir_path, directories, files in listing:
+    print('current path :' + dir_path)
+    print('directories :')
+    print(directories)
+    print('file :')
+    print(files)
+    print()
+    
+    
+#method 2
+
+
+def list_directories(s):
+    """"" Home made version of OS.walk using recursion and indentation,
+    checking if object is a file or directory and listing constituent
+    files if a directory  """
+    def dir_list(d):
+        """This nested function is much simpler than finding out which
+        file/directory has been visited."""
+        # nonlocal used to for variable that is not global
+        # but is in outer scope
+        nonlocal tab_stop
+        files = os.listdir(d)
+        for f in files:
+            current_dir = os.path.join(d, f)
+            # check if is a directory.
+            # if it is, indent by 1 and recursive function again to look for it
+            if os.path.isdir(current_dir):
+                tab_stop += 1
+                print('\t' * tab_stop + 'Directory : ' + f)
+                print('\t' * tab_stop + 'Files in {} :'.format(f))
+                dir_list(current_dir)
+                tab_stop -= 1
+            # if not directory print out file
+            else:
+                print("\t" * tab_stop + f)
+    tab_stop = 0
+    # check if is a directory- wont work if its a file
+    if os.path.exists(s):
+        print('Directory list of ' + s)
+        dir_list(s)
+    else:
+        print('This directory does not exists')
+
+
+list_directories('.')
