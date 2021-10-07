@@ -1,0 +1,14 @@
+def spam1():
+    def spam2():
+        def spam3():
+            z ='even '
+            z += y
+            return z
+        y = 'more ' + x
+        y += spam3()
+        return y
+    # cannot combine two lines below or ill get infinite loop
+    # error - referenced before assignment. - below is being referenced, not assigned 
+    x = 'spam ' +spam2()
+    x += spam2()
+    return x
