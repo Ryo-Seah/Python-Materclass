@@ -1,0 +1,68 @@
+import datetime
+import pytz
+# need some understanding of naive time etc
+
+
+class Account:
+    """" Simple account class with balance and ledger """
+    
+    # class level function, doesnt use self parameter
+    # not acting on any data attributes
+    # shared by all instances of class
+
+    @staticmethod
+    def _current_time():
+        utc_time = datetime.datetime.utcnow()
+        # pytz converts into non naive time??
+        return pytz.utc.localize(utc_time)
+
+    def __init__(self, name, balance):
+        # data attributes are data variables bound to an instance of class
+        # assigned to parameters above
+        # init is a constructor
+        # _ in front tells client not to access it directly, internal use!
+        self._name = name
+        self.__balance = balance
+        self._transaction_list = []
+        self._transaction_list.append((Account._current_time(), self.__balance))
+
+    def withdraw(self, amount):
+        if 0 < amount < self.__balance:
+            self.__balance -= amount
+        else:
+            print("You broke bitch, you don't have " + amount)
+            # see pytz module, utc is tz of time input, localize adjusts to sg time
+        # self.transaction_list.append((pytz.utc.localize(datetime.datetime.utcnow()), -amount))
+        self._transaction_list.append((Account._current_time(), -amount))
+
+    def deposit(self, amount):
+        if amount > 0:
+            self.__balance += amount
+        self._transaction_list.append((Account._current_time(), amount))
+
+    def show_balance(self):
+        print('Your balance is {}'.format(self.__balance))
+
+    def show_transaction(self):
+        for date, amount in self._transaction_list:
+            if amount >= 0:
+                tran_type = 'deposited'
+            else:
+                tran_type = 'withdrawn'
+            print('{} was {} on {}. (Local time was {})'.format(amount,
+                  tran_type, date, date.astimezone()))
+
+
+Ryo = Account('Ryo', 0)
+
+Ryo.deposit(1000)
+Ryo.withdraw(500)
+Ryo.show_transaction()
+# the balance is not changed. - python mangles names of class attributes that start w 2 underscores
+Ryo.__balance = 5
+Ryo.show_transaction()
+Ryo.show_balance()
+print(Ryo.__dict__)
+#python renames __balance to _Account__balance because of 2 underscore and
+# a new object __balance is assigned the value
+# if using __balance in the class, python mangles it but outside the class it isnt mangled.
