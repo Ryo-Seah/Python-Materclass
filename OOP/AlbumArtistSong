@@ -1,0 +1,154 @@
+class Song:
+    """"Class to represent songs
+    
+    Attributes:
+        title (str): The title of the song
+        artist (str): An object representing the creator of song
+        duration (int): The duration of song in seconds
+    """
+
+    def __init__(self, title, artist, duration=0):
+        self.title = title
+        self.artist = artist
+        self.duration = duration
+
+
+class Album:
+    # doc strings arent normal strings, attributes and args need to be referenced
+    """Class representing album, using its track list
+    Attributes:
+        name (str): The name of the album.
+        year (int): The year the album was release.d
+        artist (str) : The artist responsible for the album. If not specified,
+        artist will default to 'Various Artists'.
+        tracks  (list[song]): A list of songs in album.
+
+    Methods:
+        add_song: Used to add song to an album's track list"""
+
+    def __init__(self, name, year, artist=None):
+        self.name = name
+        self.year = year
+        if artist is None:
+            self.artist = Artist("Various Artists")
+        else:
+            self.artist = artist
+
+        self.tracks = []
+
+    def add_song(self, song, position=None):
+        """"Adds a song to the track list
+
+        Args:
+            song (Song): A song to add.
+            position (optional): If specified, song will be inserted into track list
+             at given position. Otherwise song will be appended to back of list."""
+        if position is None:
+            self.tracks.append(song)
+        else:
+            self.tracks.insert(position, song)
+
+
+class Artist:
+    # circular object reference - artist object references albums and vice versa
+    # issues with garbage collection (takes up memory) and complicates saving objects to file.
+    # system will find artist refrence in album and album reference in that artist reference
+    # - infinite loop
+    """Basic class to store artist details
+    Attributes:
+        name (str): The artist's name
+        albums (list[albums): A list of the albums by this artist.
+        This list is not exhaustive and only contains albums in this collection
+
+    Methods:
+        add_album: Adds ne album to artist's album list"""
+
+    def __init__(self, name):
+        self.name = name
+        self.albums = []
+
+    def add_album(self, album):
+        """Add new album to album list
+
+        Args:
+            album (Album): Add new album object tolist
+            If album already present, will not be added again (yet to be implemented"""
+
+        self.albums.append(album)
+
+
+def find_objects(field, object_list):
+    """Check the 'object_list' being passed with a 'name' attribute
+     equal to  'field' exists and return it if so"""
+    for item in object_list:
+        # brute force search. more efficent to sort data in file, before importing
+        if item.name == field:
+            return item
+    return None
+
+
+
+def load_data():
+    new_artist = None
+    new_album = None
+    artist_list = []
+
+    with open('albums.txt', 'r') as albums:
+        for line in albums:
+            # each row has artist, album, year, song
+            # strip the end of line character then split by tab
+            artist_field, album_field, year_field, song_field = list(line.strip('\n').split('\t'))
+            year_field = int(year_field)
+            print("{}:{}:{}:{}".format(artist_field, album_field, year_field, song_field))
+            if new_artist is None:
+                new_artist = Artist(artist_field) # adding straight away
+                artist_list.append(new_artist)
+            elif new_artist.name != artist_field:
+                # we've just read a new artist
+                # check if artist alr exists
+                new_artist=find_objects(artist_field,artist_list)
+                if new_artist is None:
+                    new_artist = Artist(artist_field)
+                    artist_list.append(new_artist)
+                new_album = None
+                # new_artist.add_album(new_album)
+            if new_album is None:
+                new_album = Album(album_field, year_field, new_artist)
+                new_artist.add_album(new_album)
+            elif new_album.name != album_field:
+                # We've just read a new album
+                # check if album exists.
+                new_album=find_objects(album_field,new_artist.albums)
+                new_artist.add_album(new_album)
+                new_album = Album(album_field, year_field, new_artist)
+
+            # Create Song object and add it to album track list
+            new_song = Song(song_field, new_artist)
+            new_album.add_song(new_song)
+            # After reading last line of text file,
+            # will have one artist and album not in - process them now
+        if new_artist is not None:
+            if new_album is not None:
+                new_artist.add_album(new_album)
+            artist_list.append(new_artist)
+
+    return artist_list
+# objects arent stored until new record is read from file
+
+
+def create_checkfile(artist_list):
+    """Create a check file from the object data for comparison with the original file"""
+    with open("checkfile.txt", 'w') as checkfile:
+        for new_artist in artist_list:
+            for new_album in new_artist.albums:
+                for new_song in new_album.tracks:
+                    print("{0.name}\t{1.name}\t{1.year}\t{2.title}".format(new_artist, new_album, new_song),
+                          file=checkfile)
+
+
+if __name__ == '__main__':
+    artists = load_data()
+    print('There are {} artists'.format(len(artists)))
+    # print(len())
+
+    create_checkfile(artists)
