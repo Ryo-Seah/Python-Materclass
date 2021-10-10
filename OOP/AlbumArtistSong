@@ -110,7 +110,6 @@ def load_data():
                 if new_artist is None:
                     new_artist = Artist(artist_field)
                     artist_list.append(new_artist)
-                new_album = None
                 # new_artist.add_album(new_album)
             if new_album is None:
                 new_album = Album(album_field, year_field, new_artist)
@@ -119,18 +118,14 @@ def load_data():
                 # We've just read a new album
                 # check if album exists.
                 new_album=find_objects(album_field,new_artist.albums)
-                new_artist.add_album(new_album)
-                new_album = Album(album_field, year_field, new_artist)
-
+                if new_album is None:
+                #create album object then add it to list of album objects within artist class.
+                    new_album = Album(album_field, year_field, new_artist)
+                    new_artist.add_album(new_album)
             # Create Song object and add it to album track list
             new_song = Song(song_field, new_artist)
             new_album.add_song(new_song)
-            # After reading last line of text file,
-            # will have one artist and album not in - process them now
-        if new_artist is not None:
-            if new_album is not None:
-                new_artist.add_album(new_album)
-            artist_list.append(new_artist)
+
 
     return artist_list
 # objects arent stored until new record is read from file
@@ -149,6 +144,5 @@ def create_checkfile(artist_list):
 if __name__ == '__main__':
     artists = load_data()
     print('There are {} artists'.format(len(artists)))
-    # print(len())
 
     create_checkfile(artists)
