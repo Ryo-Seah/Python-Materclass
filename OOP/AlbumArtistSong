@@ -128,8 +128,6 @@ def load_data():
 
 
     return artist_list
-# objects arent stored until new record is read from file
-
 
 def create_checkfile(artist_list):
     """Create a check file from the object data for comparison with the original file"""
