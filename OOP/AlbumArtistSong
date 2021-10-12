@@ -47,19 +47,19 @@ class Album:
         self.tracks = []
 
     def add_song(self, song, position=None):
-        """"Adds a song to the track list if song name dont exist alr)
+        """"Adds the title of a song to the track list if song name dont exist alr)
 
         Args:
             song (str): Title of a song to add.
             position (optional): If specified, song will be inserted into track list
              at given position. Otherwise song will be appended to back of list."""
-        song_song_found = find_object(song, self.tracks)
-        if song-found is None:
-            found = Song(song, self.artist)
+        song_found = find_object(song, self.tracks)
+        if song_found is None:
+            song_found = Song(song, self.artist)
             if position is None:
-                self.tracks.append(song)
+                self.tracks.append(song_found)
             else:
-                self.tracks.insert(position, song)
+                self.tracks.insert(position, song_found)
 
 
 class Artist:
@@ -101,12 +101,12 @@ class Artist:
         found_album = find_objects(album, self.albums)
         if found_album is None:  # create album obj then add to album list
             print(album + 'not found')
-            found_album = Album(album, year, self) # circular reference
+            found_album = Album(album, year, self.name) # circular reference removed 
             self.add_album(found_album)
         else:
             print(album + 'found')
         
-        found_album.add_song
+        found_album.add_song(title)
         
             
 
