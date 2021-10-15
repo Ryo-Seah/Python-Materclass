@@ -33,8 +33,11 @@ class DocType(Tag):
 
 
 class Head(Tag):
-    def __init__(self):
-        super(Head, self).__init__('HEAD', '')
+    def __init__(self,title=None):
+        super(Head, self).__init__('HEAD', title=None)
+        if title:
+            new_title = Tag('title', title)
+            self.contents = str(new_title)
 
 
 class Body(Tag):
@@ -55,10 +58,10 @@ class Body(Tag):
 
 class HtmlDoc:
 
-    def __init__(self):
-        self._doc_type = DocType()
-        self._head = Head()
-        self._body = Body()
+    def __init__(self,doc_type, head, body):
+        self._doc_type = doc_type
+        self._head = head
+        self._body = body
 
     def add_tag(self, name, contents):  # encapsulation - same name method but delegate to body class
         self._body.add_tag(name, contents)
@@ -72,9 +75,14 @@ class HtmlDoc:
 
 
 if __name__ == '__main__':
-    new_page = HtmlDoc()
-    new_page.add_tag('h1', 'Main Heading')
-    new_page.add_tag('h2', 'sub-heading')
-    new_page.add_tag('p', 'This will appear on the page')
-    with open('test.html', 'w') as test_doc:  # ithout .html extension, cant open in browser
+    new_body = Body()
+    new_body.add_tag('h1', 'Aggregation')
+    new_body.add_tag('p', "Unlike <strong>composition</strong>, aggregation uses existing instances "
+                          "of objects to build up another object")
+    new_body.add_tag('p', "The combined object doesn't actually own the object it consists of, "
+                          "if its destroyed, the objects still exist")
+    new_head = Head('Aggregation')
+    new_doc_type = DocType()
+    new_page = HtmlDoc(new_doc_type, new_head, new_body)
+    with open('test2.html', 'w') as test_doc:
         new_page.display(file=test_doc)
